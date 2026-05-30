@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.spec
+models/
+data/
+app/src-tauri/target/
+.env
