@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.models.database import engine
 from backend.models import tables
 
+from backend.routers import sessions, files, detection, export
+
 # Create tables
 tables.Base.metadata.create_all(bind=engine)
 
@@ -15,6 +17,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(sessions.router)
+app.include_router(files.router)
+app.include_router(detection.router)
+app.include_router(export.router)
 
 @app.get("/")
 def read_root():
