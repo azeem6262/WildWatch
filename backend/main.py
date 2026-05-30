@@ -26,3 +26,9 @@ app.include_router(export.router)
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "WildWatch API is running"}
+
+if __name__ == "__main__":
+    import uvicorn
+    import multiprocessing
+    multiprocessing.freeze_support()
+    uvicorn.run(app, host="127.0.0.1", port=8765)

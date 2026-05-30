@@ -1,4 +1,5 @@
 from speciesnet import SpeciesNet as _SpeciesNet
+from speciesnet import DEFAULT_MODEL
 from pathlib import Path
 
 SPECIES_CONFIDENCE_THRESHOLD = 0.60  # below this → "Unknown Animal"
@@ -12,7 +13,7 @@ class SpeciesNetService:
         """Load SpeciesNet into memory. Call once at app startup."""
         if self.model is None:
             # Downloads weights on first call if not cached
-            self.model = _SpeciesNet()
+            self.model = _SpeciesNet(DEFAULT_MODEL)
 
     def identify(self, frame_path: str) -> dict:
         """

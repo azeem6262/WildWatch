@@ -16,9 +16,11 @@ def download_megadetector():
 
     print("[MegaDetector] Downloading v5a (~165 MB)...")
 
-    def progress(block, block_size, total):
-        pct = min(100, block * block_size * 100 / total) if total > 0 else 0
-        bar = "█" * int(pct // 2) + "░" * (50 - int(pct // 2))
+    def progress(count, block_size, total_size):
+        pct = count * block_size * 100 / total_size
+        if pct > 100: pct = 100
+        filled = int(pct / 2)
+        bar = '#' * filled + '-' * (50 - filled)
         print(f"\r  [{bar}] {pct:.1f}%", end="", flush=True)
 
     urllib.request.urlretrieve(MEGADETECTOR_URL, MEGADETECTOR_PATH, progress)
