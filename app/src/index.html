@@ -4,19 +4,169 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WildWatch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
   <div id="sidebar">
-    <div class="logo">🐾 WildWatch</div>
+    <div class="logo">
+      <span class="icon">🐾</span> WildWatch
+    </div>
+    <div class="sidebar-section">PAST SESSIONS</div>
     <ul id="session-list">
       <!-- Past sessions go here -->
     </ul>
-    <button id="btn-new-session" class="primary-btn">New Session</button>
+    <button id="btn-new-session" class="primary-btn mt-auto">
+      <span class="plus-icon">+</span> New Session
+    </button>
   </div>
   
   <div id="main-content">
-    <!-- Screens will be injected here by main.js -->
+    
+    <!-- Screen 1: New Session -->
+    <div id="screen-new-session" class="screen active fade-in">
+      <h2>Create New Session</h2>
+      <p class="subtitle">Set up your camera details to begin processing files.</p>
+      
+      <form id="form-new-session" class="form-card">
+        <div class="form-group">
+          <label for="session-name">Session Name <span class="req">*</span></label>
+          <input type="text" id="session-name" placeholder="e.g. March Survey" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="camera-id">Camera ID <span class="req">*</span></label>
+          <input type="text" id="camera-id" placeholder="e.g. C1, C11" maxlength="20" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="location-notes">Location Notes</label>
+          <textarea id="location-notes" placeholder="Optional context..."></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">Continue</button>
+      </form>
+    </div>
+
+    <!-- Screen 2: Queue -->
+    <div id="screen-queue" class="screen fade-in">
+      <h2>File Queue</h2>
+      <p class="subtitle">Select the folder containing your camera trap SD card files.</p>
+      
+      <div class="drop-zone" id="drop-zone">
+        <div class="drop-icon">📁</div>
+        <h3>Select SD card folder here</h3>
+        <p>Click to browse folder</p>
+        <input type="file" id="folder-input" webkitdirectory directory multiple style="display: none;">
+      </div>
+      
+      <div id="queue-stats" class="stats-cards hidden">
+        <div class="stat-card">
+          <span class="stat-label">Total Files</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Photos</span>
+          <span class="stat-value" id="stat-photos">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Videos</span>
+          <span class="stat-value" id="stat-videos">0</span>
+        </div>
+      </div>
+      
+      <div id="queue-actions" class="hidden text-center mt-30">
+        <button id="btn-start-processing" class="start-btn pulse-anim">Start Processing</button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Progress -->
+    <div id="screen-progress" class="screen fade-in">
+      <h2>Live Processing</h2>
+      <p class="subtitle" id="progress-status-text">Starting pipeline...</p>
+      
+      <div class="progress-container">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">
+          <span id="progress-percent">0.0%</span>
+          <span id="progress-count">0 / 0</span>
+        </div>
+      </div>
+      
+      <div class="current-file-box">
+        <span class="label">Current File:</span>
+        <span id="current-filename" class="mono">...</span>
+        <span class="badge" id="current-stage">Initializing</span>
+      </div>
+      
+      <div class="live-stats">
+        <div class="live-stat animal">
+          <div class="val" id="live-animals">0</div>
+          <div class="lbl">Animals Found</div>
+        </div>
+        <div class="live-stat empty">
+          <div class="val" id="live-empty">0</div>
+          <div class="lbl">Empty Files</div>
+        </div>
+        <div class="live-stat error">
+          <div class="val" id="live-errors">0</div>
+          <div class="lbl">Errors</div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Screen 4: Results -->
+    <div id="screen-results" class="screen fade-in">
+      <div class="results-header">
+        <div>
+          <h2>Session Results</h2>
+          <p class="subtitle" id="results-session-name">...</p>
+        </div>
+        <div class="results-actions">
+          <button id="btn-export-csv" class="export-btn">📥 Export to Timelapse+</button>
+        </div>
+      </div>
+      
+      <div class="stats-cards">
+        <div class="stat-card">
+          <span class="stat-label">Total Analyzed</span>
+          <span class="stat-value" id="res-total">0</span>
+        </div>
+        <div class="stat-card highlight">
+          <span class="stat-label">Animals</span>
+          <span class="stat-value" id="res-animals">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Empty</span>
+          <span class="stat-value" id="res-empty">0</span>
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table id="results-table">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Species Result</th>
+              <th>Count</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody">
+            <!-- Rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+
   </div>
 
   <script src="js/api.js"></script>
