@@ -12,33 +12,35 @@ window.Queue = {
 const dropZone = document.getElementById('drop-zone');
 const folderInput = document.getElementById('folder-input');
 
-dropZone.onclick = () => folderInput.click();
+const { open } = window.__TAURI__.dialog;
 
-folderInput.onchange = async (e) => {
-  if (!e.target.files.length) return;
-  
-  const firstFile = e.target.files[0];
-  // Extract folder path from the file's absolute path provided by Tauri
-  const folderPath = firstFile.path.replace(/[^\\/]+$/, '');
-  
-  window.Queue.selectedFolder = folderPath;
-  document.querySelector('#drop-zone h3').textContent = folderPath;
-  
-  // Ingest
+dropZone.onclick = async () => {
   try {
-    const res = await window.API.ingestFiles({
-      session_id: window.appState.currentSessionId,
-      folder_path: folderPath
+    const selected = await open({
+      directory: true,
+      multiple: false,
     });
     
-    document.getElementById('stat-total').textContent = res.stats.total;
-    document.getElementById('stat-photos').textContent = res.stats.photos;
-    document.getElementById('stat-videos').textContent = res.stats.videos;
-    
-    document.getElementById('queue-stats').classList.remove('hidden');
-    
-    if (res.stats.total > 0) {
-      document.getElementById('queue-actions').classList.remove('hidden');
+    if (selected) {
+      const folderPath = selected;
+      window.Queue.selectedFolder = folderPath;
+      document.querySelector('#drop-zone h3').textContent = folderPath;
+      
+      // Ingest
+      const res = await window.API.ingestFiles({
+        session_id: window.appState.currentSessionId,
+        folder_path: folderPath
+      });
+      
+      document.getElementById('stat-total').textContent = res.stats.total;
+      document.getElementById('stat-photos').textContent = res.stats.photos;
+      document.getElementById('stat-videos').textContent = res.stats.videos;
+      
+      document.getElementById('queue-stats').classList.remove('hidden');
+      
+      if (res.stats.total > 0) {
+        document.getElementById('queue-actions').classList.remove('hidden');
+      }
     }
   } catch (err) {
     alert("Ingest error: " + err.message);

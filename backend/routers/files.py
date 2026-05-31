@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
+import os
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from backend.models.database import get_db
@@ -23,3 +25,9 @@ def ingest_files(req: IngestRequest, db: Session = Depends(get_db)):
 def list_files(session_id: int, db: Session = Depends(get_db)):
     files = db.query(File).filter(File.session_id == session_id).order_by(File.id).all()
     return files
+
+@router.get("/image/serve")
+def serve_image(path: str):
+    if os.path.exists(path):
+        return FileResponse(path)
+    raise HTTPException(status_code=404, detail="File not found")

@@ -12,10 +12,12 @@ router = APIRouter(prefix="/export", tags=["export"])
 def export_csv(session_id: int, db: Session = Depends(get_db)):
     try:
         csv_path = build_csv(session_id, db, EXPORT_DIR)
-        return FileResponse(
-            path=csv_path,
-            filename=os.path.basename(csv_path),
-            media_type="text/csv"
-        )
+        
+        # Open the folder in Windows Explorer and select the file
+        import subprocess, sys
+        if sys.platform == "win32":
+            subprocess.run(["explorer", "/select,", os.path.normpath(csv_path)])
+            
+        return {"status": "success", "file_saved_at": csv_path}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

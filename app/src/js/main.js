@@ -7,6 +7,10 @@ window.appState = {
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screenId).classList.add('active');
+  
+  if (window.Results && typeof window.Results.closeReviewModal === 'function') {
+    window.Results.closeReviewModal();
+  }
 }
 
 // Sidebar initialization

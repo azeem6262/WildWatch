@@ -28,5 +28,10 @@ window.API = {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   }),
-  getFiles: (id) => apiFetch(`/files/${id}`)
+  getFiles: (id) => apiFetch(`/files/${id}`),
+  overrideSpecies: (fileId, species) => apiFetch(`/files/${fileId}/override`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ species })
+  })
 };

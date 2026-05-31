@@ -8,3 +8,4 @@ build/
 /data/
 app/src-tauri/target/
 .env
+*.db

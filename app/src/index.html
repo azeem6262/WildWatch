@@ -151,6 +151,7 @@
         <table id="results-table">
           <thead>
             <tr>
+              <th>Image</th>
               <th>Filename</th>
               <th>Type</th>
               <th>Date</th>
@@ -165,6 +166,27 @@
         </table>
       </div>
       
+    </div>
+
+    <!-- Image Preview Overlay -->
+    <div id="preview-modal" class="modal-overlay hidden">
+      <div class="modal-content preview-content">
+        <button id="btn-preview-close" class="close-icon">&times;</button>
+        <div class="modal-image-container">
+          <img id="preview-image" src="" alt="Wildlife Preview" />
+        </div>
+        <div class="preview-metadata mt-15">
+          <h3 id="preview-filename" style="color: #60a5fa;"></h3>
+          <p><strong>AI Source:</strong> <span id="preview-source"></span></p>
+          <p><strong>Confidence:</strong> <span id="preview-confidence"></span></p>
+          
+          <div class="form-group mt-15">
+            <label for="preview-species-input">Species Name (Edit to override):</label>
+            <input type="text" id="preview-species-input" class="inline-edit-input" placeholder="e.g. Nilgai">
+            <span id="preview-save-indicator" style="color: #4ade80; font-size: 12px; opacity: 0; transition: opacity 0.3s;">Saved ✓</span>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>

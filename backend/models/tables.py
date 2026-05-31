@@ -23,6 +23,7 @@ class File(Base):
     session_id = Column(Integer, ForeignKey("sessions.id", ondelete="CASCADE"), nullable=False, index=True)
     filename = Column(String, nullable=False)
     filepath = Column(String, nullable=False)
+    best_frame_path = Column(String)
     file_type = Column(String, nullable=False)
     file_date = Column(Date)
     file_size_bytes = Column(Integer)
@@ -40,6 +41,8 @@ class File(Base):
 
     csv_result = Column(String, index=True)
     csv_count = Column(Integer)
+    needs_review = Column(Boolean, default=False)
+    manually_verified = Column(Boolean, default=False)
 
     error_message = Column(String)
     processed_at = Column(DateTime)

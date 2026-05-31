@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.models.database import engine
+from backend.models.database import engine, run_migrations
 from backend.models import tables
 
 from backend.routers import sessions, files, detection, export
 
-# Create tables
-tables.Base.metadata.create_all(bind=engine)
+# Run database migrations
+run_migrations(engine)
 
 app = FastAPI(title="WildWatch Backend")
 
