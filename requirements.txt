@@ -10,5 +10,7 @@ python-multipart==0.0.9
 humanize==4.9.0
 python-dotenv==1.0.1
 pyinstaller==6.6.0
+hachoir==3.3.0
 # SpeciesNet — install from Google's repo
 # pip install git+https://github.com/google/cameratrapai.git
+transformers==4.40.0

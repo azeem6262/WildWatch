@@ -25,27 +25,37 @@ def build_csv(session_id: int, db: Session, output_dir: str) -> str:
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     safe_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in session.name)
-    csv_path = os.path.join(output_dir, f"WildWatch_{safe_name}_{timestamp}.csv")
+    safe_cam = "".join(c if c.isalnum() or c in "-_" else "_" for c in session.camera_id)
+    csv_path = os.path.join(output_dir, f"WildWatch_{safe_name}_{safe_cam}_{timestamp}.csv")
 
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["camera_id", "result", "count", "date"])
+        writer.writerow(["File", "RelativePath", "DateTime", "DeleteFlag", "Species", "Individuals", "Behaviour"])
 
         for file in files:
-            date_value = file.file_date.strftime("%Y-%m-%d") if file.file_date else ""
+            date_value = file.datetime_full.strftime("%Y-%m-%d %H:%M:%S") if file.datetime_full else ""
+            
+            relative_path = file.relative_path or ""
+            behaviour = file.behaviour or ""
 
             if not file.animal_detected:
-                result_value = "Absent"
+                species_value = ""
                 count_value = 0
             else:
-                result_value = file.species or "Unknown Animal"
+                if file.csv_result == "Unknown Animal":
+                    species_value = "animal"
+                else:
+                    species_value = str(file.csv_result).strip().lower()
                 count_value = file.max_count or 1
 
             writer.writerow([
-                session.camera_id,
-                result_value,
+                file.filename,
+                relative_path,
+                date_value,
+                "false",
+                species_value,
                 count_value,
-                date_value
+                behaviour
             ])
 
     return csv_path

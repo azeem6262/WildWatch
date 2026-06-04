@@ -33,5 +33,11 @@ window.API = {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ species })
-  })
+  }),
+  updateBehaviour: (fileId, behaviour) => apiFetch(`/files/${fileId}/behaviour`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ behaviour })
+  }),
+  getSystemStatus: () => apiFetch('/system/status')
 };

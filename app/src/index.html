@@ -18,7 +18,11 @@
     <ul id="session-list">
       <!-- Past sessions go here -->
     </ul>
-    <button id="btn-new-session" class="primary-btn mt-auto">
+    <div id="backfill-status" style="display: none; font-size: 12px; color: #9ca3af; text-align: center; margin-bottom: 15px;">Updating file records...</div>
+    <button id="btn-settings" class="secondary-btn mt-auto" style="margin-bottom: 10px; background: transparent; border: 1px solid #374151; color: #d1d5db; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      ⚙️ Settings
+    </button>
+    <button id="btn-new-session" class="primary-btn">
       <span class="plus-icon">+</span> New Session
     </button>
   </div>
@@ -156,6 +160,7 @@
               <th>Type</th>
               <th>Date</th>
               <th>Species Result</th>
+              <th>Behaviour</th>
               <th>Count</th>
               <th>Confidence</th>
             </tr>
@@ -189,13 +194,46 @@
       </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-content" style="max-width: 500px;">
+        <button id="btn-settings-close" class="close-icon">&times;</button>
+        <h2>⚙️ Configuration</h2>
+        
+        <div class="form-group mt-15">
+          <label for="gemini-api-key">Gemini API Key</label>
+          <p style="font-size: 13px; color: #9ca3af; margin-bottom: 10px; line-height: 1.4;">
+            WildWatch uses Google's Gemini AI to accurately read timestamps from video files. You need your own free API key to use this feature.<br><br>
+            <strong>How to get your key:</strong><br>
+            1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #60a5fa;">Google AI Studio</a>.<br>
+            2. Sign in and click <strong>"Create API key"</strong>.<br>
+            3. Copy the key and paste it below.
+          </p>
+          <input type="password" id="gemini-api-key" placeholder="AIzaSy..." style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #374151; background: #1f2937; color: white;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+            <span id="settings-save-indicator" style="color: #4ade80; font-size: 13px; opacity: 0; transition: opacity 0.3s;">Saved successfully ✓</span>
+            <button id="btn-settings-save" class="primary-btn" style="width: auto; padding: 8px 16px;">Save Key</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+
+  <datalist id="behaviour-options">
+    <option value="passing"></option>
+    <option value="feeding"></option>
+    <option value="resting"></option>
+    <option value="drinking"></option>
+    <option value="scent marking"></option>
+  </datalist>
 
   <script src="js/api.js"></script>
   <script src="js/session.js"></script>
   <script src="js/queue.js"></script>
   <script src="js/progress.js"></script>
   <script src="js/results.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

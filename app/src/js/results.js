@@ -38,6 +38,16 @@ window.Results = {
           } else if (f.needs_review) {
             speciesDisplayHtml += `<span class="review-icon" title="Needs Review">⚠️</span>`;
           }
+
+          let behaviourDisplayHtml = `
+            <input type="text" 
+                   list="behaviour-options"
+                   class="inline-behaviour-input" 
+                   data-id="${f.id}" 
+                   value="${f.behaviour ? f.behaviour.replace(/"/g, '&quot;') : ''}" 
+                   placeholder="e.g. passing"
+                   title="Click to edit">
+          `;
           
           let thumbnailSrc = '';
           let previewSrc = '';
@@ -81,6 +91,7 @@ window.Results = {
             <td><span class="type-badge ${f.file_type.toLowerCase()}">${f.file_type}</span></td>
             <td>${f.file_date || '-'}</td>
             <td class="species-cell" id="species-cell-${f.id}">${speciesDisplayHtml}</td>
+            <td class="behaviour-cell">${behaviourDisplayHtml}</td>
             <td>${f.csv_count}</td>
             <td><span class="${confClass}">${confValue.toFixed(1)}%</span></td>
           `;
@@ -102,6 +113,33 @@ window.Results = {
       // Attach events to inline inputs
       document.querySelectorAll('.inline-species-input').forEach(input => {
         input.addEventListener('change', (e) => window.Results.saveOverride(e.target.dataset.id, e.target.value));
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') input.blur();
+        });
+      });
+
+      document.querySelectorAll('.inline-behaviour-input').forEach(input => {
+        // Toggle empty dash styling
+        if (!input.value) {
+          input.classList.add('empty-dash');
+          input.placeholder = "—";
+        }
+        
+        input.addEventListener('focus', (e) => {
+          e.target.classList.remove('empty-dash');
+          e.target.placeholder = "e.g. passing";
+        });
+        
+        input.addEventListener('blur', (e) => {
+          if (!e.target.value) {
+            e.target.classList.add('empty-dash');
+            e.target.placeholder = "—";
+          }
+        });
+
+        input.addEventListener('change', (e) => {
+          window.Results.saveBehaviour(e.target.dataset.id, e.target.value);
+        });
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') input.blur();
         });
@@ -170,6 +208,25 @@ window.Results = {
       
     } catch(err) {
       alert("Failed to override: " + err.message);
+    }
+  },
+
+  async saveBehaviour(fileId, newBehaviour) {
+    try {
+      const res = await window.API.updateBehaviour(fileId, newBehaviour);
+      const tableInput = document.querySelector(`.inline-behaviour-input[data-id="${fileId}"]`);
+      if (tableInput) {
+          tableInput.value = res.new_behaviour;
+          if (!res.new_behaviour) {
+              tableInput.classList.add('empty-dash');
+              tableInput.placeholder = "—";
+          } else {
+              tableInput.classList.remove('empty-dash');
+              tableInput.placeholder = "e.g. passing";
+          }
+      }
+    } catch(err) {
+      alert("Failed to update behaviour: " + err.message);
     }
   }
 };

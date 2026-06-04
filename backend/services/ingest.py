@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
 from backend.models.tables import File
+from backend.utils.metadata import extract_datetime_and_relative_path
 
 SUPPORTED_VIDEO = {'.mp4', '.avi', '.mov', '.mkv'}
 SUPPORTED_PHOTO = {'.jpg', '.jpeg', '.png'}
@@ -33,11 +34,8 @@ def scan_folder(folder_path: str, session_id: int, db: Session) -> dict:
             stats["skipped"] += 1
             continue
 
-        # Date from file system — GRDE PRO has no timestamp in filename
-        try:
-            file_date = datetime.fromtimestamp(filepath.stat().st_mtime).date()
-        except Exception:
-            file_date = None
+        datetime_full, relative_path = extract_datetime_and_relative_path(filepath, file_type)
+        file_date = datetime_full.date() if datetime_full else None
 
         # Video duration
         duration_sec = None
@@ -56,8 +54,10 @@ def scan_folder(folder_path: str, session_id: int, db: Session) -> dict:
             session_id=session_id,
             filename=filepath.name,
             filepath=str(filepath.resolve()),
+            relative_path=relative_path,
             file_type=file_type,
             file_date=file_date,
+            datetime_full=datetime_full,
             file_size_bytes=filepath.stat().st_size,
             duration_sec=duration_sec,
             status="pending"

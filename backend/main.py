@@ -3,10 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.models.database import engine, run_migrations
 from backend.models import tables
 
-from backend.routers import sessions, files, detection, export
+from backend.routers import sessions, files, detection, export, settings
+from backend.utils.backfill import run_datetime_backfill_background, is_backfill_running
+import backend.utils.backfill as backfill_module
 
 # Run database migrations
 run_migrations(engine)
+
+# Start backfill background task
+run_datetime_backfill_background()
 
 app = FastAPI(title="WildWatch Backend")
 
@@ -22,10 +27,15 @@ app.include_router(sessions.router)
 app.include_router(files.router)
 app.include_router(detection.router)
 app.include_router(export.router)
+app.include_router(settings.router)
 
 @app.get("/")
 def read_root():
     return {"status": "ok", "message": "WildWatch API is running"}
+
+@app.get("/system/status")
+def system_status():
+    return {"is_backfill_running": backfill_module.is_backfill_running}
 
 if __name__ == "__main__":
     import uvicorn

@@ -14,7 +14,7 @@ BACKEND_HOST = "127.0.0.1"
 BACKEND_PORT = 8765
 
 DEFAULT_SENSITIVITY   = "medium"
-VIDEO_FPS_SAMPLE_RATE = 1.0     # frames per second sampled from video
+VIDEO_FPS_SAMPLE_RATE = 2.0     # frames per second sampled from video
 EARLY_EXIT_CONFIDENCE = 0.90    # stop sampling if confidence reaches this
 
 SUPPORTED_VIDEO = {".mp4", ".avi", ".mov", ".mkv"}

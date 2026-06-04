@@ -163,3 +163,18 @@ def override_species(file_id: int, req: OverrideRequest, db: Session = Depends(g
     db.commit()
     
     return {"status": "success", "file_id": file.id, "new_species": file.csv_result}
+
+class BehaviourRequest(BaseModel):
+    behaviour: str
+
+@router.put("/files/{file_id}/behaviour")
+def update_behaviour(file_id: int, req: BehaviourRequest, db: Session = Depends(get_db)):
+    file = db.query(File).filter(File.id == file_id).first()
+    if not file:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    file.behaviour = req.behaviour
+    db.commit()
+    
+    return {"status": "success", "file_id": file.id, "new_behaviour": file.behaviour}

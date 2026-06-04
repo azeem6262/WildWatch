@@ -26,6 +26,8 @@ class File(Base):
     best_frame_path = Column(String)
     file_type = Column(String, nullable=False)
     file_date = Column(Date)
+    datetime_full = Column(DateTime)
+    relative_path = Column(String)
     file_size_bytes = Column(Integer)
     duration_sec = Column(Float)
     status = Column(String, default="pending", index=True)
@@ -41,6 +43,7 @@ class File(Base):
 
     csv_result = Column(String, index=True)
     csv_count = Column(Integer)
+    behaviour = Column(String, default="")
     needs_review = Column(Boolean, default=False)
     manually_verified = Column(Boolean, default=False)
 

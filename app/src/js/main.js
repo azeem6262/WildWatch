@@ -37,3 +37,22 @@ document.getElementById('btn-new-session').onclick = () => {
 
 // Init
 loadSessions();
+
+// Backfill status polling
+async function checkSystemStatus() {
+  try {
+    const status = await window.API.getSystemStatus();
+    const indicator = document.getElementById('backfill-status');
+    if (status.is_backfill_running) {
+      indicator.style.display = 'block';
+      setTimeout(checkSystemStatus, 3000); // Poll every 3 seconds while running
+    } else {
+      indicator.style.display = 'none';
+    }
+  } catch (err) {
+    console.error("Failed to check system status", err);
+  }
+}
+
+// Start polling on load
+checkSystemStatus();

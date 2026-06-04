@@ -50,8 +50,8 @@ def run_migrations(engine):
             conn.execute(text("UPDATE schema_migrations SET version = 1"))
             
     if current_version < 2:
-        # Future ALTER TABLE commands go here
-        # with engine.begin() as conn:
-        #     conn.execute(text("ALTER TABLE ..."))
-        #     conn.execute(text("UPDATE schema_migrations SET version = 2"))
-        pass
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE files ADD COLUMN datetime_full DATETIME"))
+            conn.execute(text("ALTER TABLE files ADD COLUMN relative_path TEXT"))
+            conn.execute(text("ALTER TABLE files ADD COLUMN behaviour TEXT DEFAULT ''"))
+            conn.execute(text("UPDATE schema_migrations SET version = 2"))
