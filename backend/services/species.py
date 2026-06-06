@@ -7,17 +7,9 @@ import base64
 from transformers import CLIPProcessor, CLIPModel
 import torch
 from PIL import Image
-from dotenv import load_dotenv
 from pathlib import Path
 
 import sys
-
-if getattr(sys, 'frozen', False):
-    env_path = Path(sys._MEIPASS) / ".env"
-else:
-    env_path = Path(".env")
-
-load_dotenv(dotenv_path=env_path)
 
 SPECIES_CONFIDENCE_THRESHOLD = 0.60  # below this → call Gemini fallback
 
@@ -65,9 +57,18 @@ class SpeciesNetService:
         if self.clip_model is None:
             try:
                 print("Loading offline CLIP fallback model...")
-                model_id = "openai/clip-vit-base-patch32"
-                self.clip_model = CLIPModel.from_pretrained(model_id)
-                self.clip_processor = CLIPProcessor.from_pretrained(model_id)
+                if getattr(sys, 'frozen', False):
+                    # PyInstaller path
+                    clip_dir = Path(sys._MEIPASS) / "models" / "clip-vit-base-patch32"
+                else:
+                    # Dev path
+                    clip_dir = Path("models") / "clip-vit-base-patch32"
+                    
+                if not clip_dir.exists():
+                    print(f"Warning: Offline CLIP weights not found at {clip_dir}. Please run download_models.py.")
+                else:
+                    self.clip_model = CLIPModel.from_pretrained(str(clip_dir))
+                    self.clip_processor = CLIPProcessor.from_pretrained(str(clip_dir))
             except Exception as e:
                 print(f"Failed to load CLIP fallback model: {e}")
 

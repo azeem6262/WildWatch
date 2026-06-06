@@ -12,9 +12,11 @@ if ($BuildBackend) {
     
     # Run PyInstaller with --onefile so Tauri can use it as a sidecar
     pyinstaller --name wildwatch_backend --noconfirm --clean --onefile `
-        --add-data ".env;." `
+        --add-data "models/clip-vit-base-patch32;models/clip-vit-base-patch32" `
         --hidden-import=ultralytics `
         --hidden-import=speciesnet `
+        --hidden-import=transformers `
+        --hidden-import=torch `
         --hidden-import=uvicorn.logging `
         --hidden-import=uvicorn.loops `
         --hidden-import=uvicorn.loops.auto `

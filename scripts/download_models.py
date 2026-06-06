@@ -1,6 +1,7 @@
 import urllib.request
 import subprocess
 import sys
+import shutil
 from pathlib import Path
 
 MEGADETECTOR_URL = (
@@ -35,7 +36,32 @@ def install_speciesnet():
     ])
     print("[SpeciesNet] Installed. Weights will download on first inference call.")
 
+def download_clip():
+    clip_dir = Path(__file__).parent.parent / "models" / "clip-vit-base-patch32"
+    if clip_dir.exists() and any(clip_dir.iterdir()):
+        print(f"[CLIP] Already downloaded at {clip_dir}")
+        return
+
+    print("[CLIP] Downloading openai/clip-vit-base-patch32 weights for offline fallback...")
+    try:
+        from transformers import CLIPModel, CLIPProcessor
+        clip_dir.mkdir(parents=True, exist_ok=True)
+        model_id = "openai/clip-vit-base-patch32"
+        
+        # Download and save the processor and model locally
+        processor = CLIPProcessor.from_pretrained(model_id)
+        model = CLIPModel.from_pretrained(model_id)
+        
+        processor.save_pretrained(clip_dir)
+        model.save_pretrained(clip_dir)
+        print(f"[CLIP] Successfully saved to {clip_dir}")
+    except ImportError:
+        print("[CLIP] Error: 'transformers' library is not installed. Run 'pip install -r requirements.txt' first.")
+    except Exception as e:
+        print(f"[CLIP] Error downloading CLIP model: {e}")
+
 if __name__ == "__main__":
     download_megadetector()
     install_speciesnet()
+    download_clip()
     print("\nAll models ready. You can now run the app.")

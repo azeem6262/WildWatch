@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import os
 import dotenv
+from pathlib import Path
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
@@ -28,16 +29,19 @@ def set_gemini_key(payload: GeminiKeyModel):
         if "GEMINI_API_KEY" in os.environ:
             del os.environ["GEMINI_API_KEY"]
             
-    # 2. Persist to .env file
-    env_file = ".env"
-    if not os.path.exists(env_file):
+    # 2. Persist to ~/.wildwatch/config.env
+    config_dir = Path.home() / ".wildwatch"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    env_file = config_dir / "config.env"
+    
+    if not env_file.exists():
         # Create it if it doesn't exist
         with open(env_file, "w") as f:
             pass
             
     if key:
-        dotenv.set_key(env_file, "GEMINI_API_KEY", key)
+        dotenv.set_key(str(env_file), "GEMINI_API_KEY", key)
     else:
-        dotenv.unset_key(env_file, "GEMINI_API_KEY")
+        dotenv.unset_key(str(env_file), "GEMINI_API_KEY")
         
     return {"status": "success", "message": "Gemini API key saved."}

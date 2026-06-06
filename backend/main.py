@@ -2,6 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.models.database import engine, run_migrations
 from backend.models import tables
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load user config first before anything else initializes
+config_file = Path.home() / ".wildwatch" / "config.env"
+if config_file.exists():
+    load_dotenv(dotenv_path=config_file)
 
 from backend.routers import sessions, files, detection, export, settings
 from backend.utils.backfill import run_datetime_backfill_background, is_backfill_running
