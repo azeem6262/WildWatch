@@ -117,10 +117,29 @@ def _extract_timestamp_with_gemini(filepath: str, file_type: str) -> datetime | 
             "If no timestamp is visible on the image, respond with {\"datetime\": null}."
         )
 
-        response = model.generate_content([
-            {"mime_type": "image/jpeg", "data": image_data},
-            prompt
-        ])
+        max_retries = 3
+        retry_delay = 10
+        response = None
+        
+        for attempt in range(max_retries):
+            try:
+                response = model.generate_content([
+                    {"mime_type": "image/jpeg", "data": image_data},
+                    prompt
+                ])
+                break # Success!
+            except Exception as e:
+                # 429 Too Many Requests usually shows up in exception string
+                if "429" in str(e) or "quota" in str(e).lower() or "rate" in str(e).lower():
+                    if attempt < max_retries - 1:
+                        print(f"[Gemini] Rate limit hit. Retrying in {retry_delay}s... (Attempt {attempt+1}/{max_retries})")
+                        time.sleep(retry_delay)
+                        continue
+                print(f"Gemini timestamp extraction error: {e}")
+                return None
+
+        if not response:
+            return None
 
         text = response.text.strip()
         if text.startswith("```json"):
@@ -144,7 +163,7 @@ def _extract_timestamp_with_gemini(filepath: str, file_type: str) -> datetime | 
             except ValueError:
                 return None
     except Exception as e:
-        print(f"Gemini timestamp extraction error: {e}")
+        print(f"Gemini timestamp parsing error: {e}")
         return None
     return None
 
